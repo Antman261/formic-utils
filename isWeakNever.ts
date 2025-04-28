@@ -49,7 +49,10 @@
  * }
  * ```
  */
-export const isWeaklyNever = (v: never) => console.warn("Unexpected value:", v);
+export const isWeaklyNever = (v: never): never => {
+  console.warn("Unexpected value:", v);
+  return v;
+};
 
 /**
  * Unlike `isWeaklyNever`, throws an exception if the value exists at runtime.

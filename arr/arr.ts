@@ -2,6 +2,13 @@ import type { Ops, OpKind, Mapper } from "./ArrFromTypes.ts";
 import { generatePlan } from "./generatePlan.ts";
 import { getOperator } from "./getOperator.ts";
 
+type Arr<T> = {
+  remove: (...items: T[]) => Arr<T>;
+  add: (...items: T[]) => Arr<T>;
+  map: (...fns: Mapper<T>[]) => Arr<T>;
+  result: () => T[];
+};
+
 /**
  * Core array manipulation function that provides a fluent interface for transforming arrays.
  * This is an internal implementation detail - users should use the exported `arr` object instead.
@@ -10,7 +17,7 @@ import { getOperator } from "./getOperator.ts";
  * @param copy - Whether to create a copy of the input array before modifying it
  * @returns An object with methods for chaining array operations
  */
-const _with = <T>(arr: T[], copy = false) => {
+const _with = <T>(arr: T[], copy = false): Arr<T> => {
   const target = copy ? [...arr] : arr;
   const ops: Ops<T>[] = [];
   const makeOp =
@@ -134,5 +141,5 @@ export const arr = {
    * // modified is [1, 2, 3, 4]
    * ```
    */
-  from: <T>(arr: T[]) => _with(arr, true),
+  from: <T>(arr: T[]): Arr<T> => _with(arr, true),
 };

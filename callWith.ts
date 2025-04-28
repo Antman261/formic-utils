@@ -20,5 +20,5 @@ import type { Func } from "./Func.ts";
  */
 export const callWith =
   <F extends Func>(...args: Parameters<F>) =>
-  (fn: F) =>
-    fn(...args);
+  (fn: F): F =>
+    fn(...args) as F;
