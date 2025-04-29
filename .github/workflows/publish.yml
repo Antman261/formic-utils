@@ -1,4 +1,7 @@
 name: "Automated release"
+permissions:
+  id-token: write
+  contents: read
 on:
   push:
     branches:
