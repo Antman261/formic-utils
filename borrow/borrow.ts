@@ -18,16 +18,29 @@ export const checkMutablyBorrowed = <T extends Obj>(v: T): boolean => mutableBor
 export const borrowMutably = <T extends Obj>(v: T) => mutableBorrows.add(v);
 export const returnMutableBorrow = <T extends Obj>(v: T) => mutableBorrows.delete(v);
 
-// null: No inherited properties - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
+/**
+ * defineProperty is ~40% faster if the object has no prototype, which is what Object.create(null) gives us
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
+ */
 const mutableDescriptor = Object.create(null);
 mutableDescriptor.value = 'm';
 
-export const toMutable = <T extends Obj>(v: T): Mutable<T> => {
+export const toBorrow = <T extends Obj>(v: T, kind: BorrowKind): Mutable<T> => {
+  /**
+   * only call defineProperty if necessary:
+   * * 3.5ns to check property
+   * * 75ns to redefine existing property
+   * * 105ns to use defineProperty for the first time
+   */
   // @ts-expect-error _borrow is a secret property
-  if (v[_borrow] !== 'm') {
-    // only do this if necessary, 3.5ns to check property, 75ns to redefine existing property, 105ns to use defineProperty for the first time
+  if (v[_borrow] !== kind) {
     // uses defineProperty to prevent enumeration, rewriting
-    // uses mutableDescriptor to prevent redundant object instantiation, improving performance
+    //
+    /**
+     * use defineProperty to prevent enumeration, rewriting
+     * passing statically defined mutableDescriptor to prevent redundant object instantiations, improving performance by ~10ns
+     */
     Object.defineProperty(v, _borrow, mutableDescriptor);
   }
   return v as Mutable<T>;

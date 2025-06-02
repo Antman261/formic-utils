@@ -5,15 +5,16 @@ import {
   isMutablyBorrowable,
   type Mutable,
   returnMutableBorrow,
-  toMutable,
+  toBorrow,
 } from './borrow.ts';
 
 /**
  * When calling a mutative function, wrap the mutable parameter(s) in takeMutable to acknowledge that the parameter will be mutated by the function.
  *
- * This function is compile-time only, providing no runtime borrow checking.
+ * Unless the callee is wrapped in `withMutable` or `withStrictMutable`,
+ * `takeMutable` only provides compile-time checks with no runtime borrow checking.
  */
-export const takeMutable = <T extends Obj<unknown>>(v: T): Mutable<T> => toMutable(v);
+export const takeMutable = <T extends Obj<unknown>>(v: T): Mutable<T> => toBorrow(v, 'm');
 
 /**
  * Wrap an asynchronous function that accepts one or more Mutable parameters in `withMutable` to ensure concurrent mutable borrows are correctly tracked by logging a warning if the value is concurrently borrowed more than once before being returned.

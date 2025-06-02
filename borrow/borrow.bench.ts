@@ -1,5 +1,6 @@
-const mutableDescriptor = Object.create(null);
-mutableDescriptor.value = 'm';
+const staticNullDescriptor = Object.create(null);
+staticNullDescriptor.value = 'm';
+const staticObjectDescriptor = { value: 'm' };
 const _borrow: unique symbol = Symbol('borrow-kind');
 
 Deno.bench(
@@ -20,14 +21,14 @@ Deno.bench(
   'Avoiding redefining identical properties on an object',
   () => {
     // @ts-expect-error ok
-    if (foo[_borrow] !== 'm') Object.defineProperty(foo, _borrow, mutableDescriptor);
+    if (foo[_borrow] !== 'm') Object.defineProperty(foo, _borrow, staticNullDescriptor);
   },
 );
 const foo2 = { v: 'a' };
 Deno.bench(
   'Redefining identical properties on an object',
   () => {
-    Object.defineProperty(foo2, _borrow, mutableDescriptor);
+    Object.defineProperty(foo2, _borrow, staticNullDescriptor);
   },
 );
 
@@ -35,7 +36,7 @@ Deno.bench(
   'Defining non-enumerable properties with static descriptor object created using Object.create(null);',
   () => {
     const foo = { v: 'a' };
-    Object.defineProperty(foo, _borrow, mutableDescriptor);
+    Object.defineProperty(foo, _borrow, staticNullDescriptor);
   },
 );
 
@@ -46,6 +47,14 @@ Deno.bench(
     const desc = Object.create(null);
     desc.value = 'm';
     Object.defineProperty(foo, _borrow, desc);
+  },
+);
+
+Deno.bench(
+  'Defining non-enumerable properties with static descriptor object created using an object literal',
+  () => {
+    const foo = { v: 'a' };
+    Object.defineProperty(foo, _borrow, staticObjectDescriptor);
   },
 );
 
