@@ -1,6 +1,6 @@
 import type { Obj, ObjWide } from '../commonTypes/mod.ts';
 
-const _borrow: unique symbol = Symbol();
+const _borrow: unique symbol = Symbol('borrow-kind');
 
 type BorrowKind = 'm' | 's'; // mutable | sequential
 export type Borrow<BK extends BorrowKind> = { [_borrow]: BK };
@@ -17,7 +17,21 @@ export const isMutablyBorrowable = <T extends Obj>(v: ObjWide): v is Mutable<T> 
 export const checkMutablyBorrowed = <T extends Obj>(v: T): boolean => mutableBorrows.has(v);
 export const borrowMutably = <T extends Obj>(v: T) => mutableBorrows.add(v);
 export const returnMutableBorrow = <T extends Obj>(v: T) => mutableBorrows.delete(v);
-export const toMutable = <T extends Obj>(v: T): Mutable<T> => Object.assign(v, _mutBrand);
+
+// null: No inherited properties - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
+const mutableDescriptor = Object.create(null);
+mutableDescriptor.value = 'm';
+
+export const toMutable = <T extends Obj>(v: T): Mutable<T> => {
+  // @ts-expect-error _borrow is a secret property
+  if (v[_borrow] !== 'm') {
+    // only do this if necessary, 3.5ns to check property, 75ns to redefine existing property, 105ns to use defineProperty for the first time
+    // uses defineProperty to prevent enumeration, rewriting
+    // uses mutableDescriptor to prevent redundant object instantiation, improving performance
+    Object.defineProperty(v, _borrow, mutableDescriptor);
+  }
+  return v as Mutable<T>;
+};
 
 /**
  * Wrap a function argument with Sequential to require callers to wait for the object to become available

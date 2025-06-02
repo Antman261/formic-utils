@@ -26,7 +26,7 @@ export const withMutable = <Fn extends AsyncFunc>(fn: Fn): Fn =>
       if (isMutablyBorrowable(arg)) {
         if (checkMutablyBorrowed(arg)) {
           console.warn('Object already mutably borrowed:', arg);
-          console.trace();
+          console.trace(`Object ${Deno.inspect(arg)} already mutably borrowed`);
         }
         borrowMutably(arg);
       }

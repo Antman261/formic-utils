@@ -5,6 +5,7 @@ import { takeMutable, withMutable, withStrictMutable } from './mutable.ts';
 import { assertRejects } from '@std/assert';
 import type { Mutable } from './borrow.ts';
 import { makeTestFrame } from '../testing/makeTestFrame.ts';
+import { deserialize, serialize } from 'node:v8';
 
 type TestObj = { value: string };
 
@@ -116,5 +117,19 @@ Deno.test(
   withFrame(async () => {
     await mutateObjectAsynchronously(takeMutable(obj));
     expect(obj.value).toEqual('hello! mutated');
+  }),
+);
+
+Deno.test(
+  'Mutably borrowable objects do not log their borrow-kind property',
+  withFrame(() => {
+    expect(Deno.inspect(takeMutable(obj))).toEqual('{ value: "hello!" }');
+  }),
+);
+
+Deno.test(
+  'Mutably borrowable objects can be serialized',
+  withFrame(() => {
+    expect(deserialize(serialize(takeMutable(obj)))).toEqual({ value: 'hello!' });
   }),
 );
