@@ -41,7 +41,7 @@ export function toBorrow<T extends ObjWide>(v: T, kind: BorrowKind): Mutable<T> 
    * * 75ns to redefine existing property
    * * 105ns to use defineProperty for the first time
    */
-  if (isBorrow(v, kind)) {
+  if (!isBorrow(v, kind)) {
     /**
      * use defineProperty to prevent enumeration & rewriting.
      * uses statically defined mutableDescriptor to prevent redundant object instantiations & improve performance by ~10ns
