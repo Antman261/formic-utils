@@ -46,9 +46,7 @@ export const withStrictMutable = <Fn extends AsyncFunc>(fn: Fn): Fn =>
   (async (...args) => {
     for (const arg of args) {
       if (isBorrow(arg, 'm')) {
-        if (checkMutablyBorrowed(arg)) {
-          throw new Error(`Object already mutably borrowed: ${arg}`);
-        }
+        if (checkMutablyBorrowed(arg)) throw new Error(`Object already mutably borrowed: ${arg}`);
         borrowMutably(arg);
       }
     }

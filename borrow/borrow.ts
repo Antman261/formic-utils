@@ -41,7 +41,7 @@ export function toBorrow<T extends ObjWide>(v: T, kind: BorrowKind): Mutable<T> 
    * * 75ns to redefine existing property
    * * 105ns to use defineProperty for the first time
    */
-  if (v[_borrow] !== 'm') {
+  if (isBorrow(v, kind)) {
     /**
      * use defineProperty to prevent enumeration & rewriting.
      * uses statically defined mutableDescriptor to prevent redundant object instantiations & improve performance by ~10ns
@@ -54,7 +54,6 @@ export function toBorrow<T extends ObjWide>(v: T, kind: BorrowKind): Mutable<T> 
 
 const mutableBorrows = new WeakSet<Obj<unknown>>();
 
-export const isMutablyBorrowable = <T extends Obj>(v: ObjWide): v is Mutable<T> => v[_borrow] === 'm';
 export const checkMutablyBorrowed = <T extends Obj>(v: T): boolean => mutableBorrows.has(v);
 export const borrowMutably = <T extends Obj>(v: T) => mutableBorrows.add(v);
 export const returnMutableBorrow = <T extends Obj>(v: T) => mutableBorrows.delete(v);

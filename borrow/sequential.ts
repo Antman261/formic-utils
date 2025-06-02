@@ -36,11 +36,10 @@ const borrowSequentially = async <T extends Obj>(v: Sequential<T>) => {
   return;
 };
 
-export const returnSequentialBorrow = <T extends Obj>(v: T) => {
+const returnSequentialBorrow = <T extends Obj>(v: T) => {
   getSeqBorrow(v)?.return();
 };
 const makeSeqBorrowState = (): SeqBorrowState => {
-  const { promise, resolve } = Promise.withResolvers<void>();
   const state: SeqBorrowState = {
     locked: true,
     borrow() {
@@ -50,8 +49,7 @@ const makeSeqBorrowState = (): SeqBorrowState => {
       state.locked = false;
       state.resolve();
     },
-    promise,
-    resolve,
+    ...Promise.withResolvers<void>(),
   };
   return state;
 };
