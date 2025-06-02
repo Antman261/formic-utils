@@ -1,7 +1,7 @@
 export * from "./callWith.ts";
 export * from "./compose.ts";
 export * from "./arr/index.ts";
-export * from "./Func.ts";
+export * from "./commonTypes/mod.ts";
 export * from "./never.ts";
 export * from "./time/convert.ts";
 // export * from "./memoise.ts";

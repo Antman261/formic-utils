@@ -1,4 +1,4 @@
-import type { Func } from "./Func.ts";
+import type { Func } from "./commonTypes/Func.ts";
 
 export const memoise = <Fn extends Func>(fn: Fn): Fn => {
   let wasCalled = false;

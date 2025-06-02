@@ -1,4 +1,4 @@
-import type { Func } from "./Func.ts";
+import type { Func } from "./commonTypes/Func.ts";
 
 /**
  * Useful for providing static values to higher order functions.
