@@ -25,8 +25,12 @@ export const returnMutableBorrow = <T extends Obj>(v: T) => mutableBorrows.delet
  */
 const mutableDescriptor = Object.create(null);
 mutableDescriptor.value = 'm';
+const sequentialDescriptor = Object.create(null);
+sequentialDescriptor.value = 's';
 
-export const toBorrow = <T extends Obj>(v: T, kind: BorrowKind): Mutable<T> => {
+export function toBorrow<T extends Obj>(v: T, kind: 'm'): Mutable<T>;
+export function toBorrow<T extends Obj>(v: T, kind: 's'): Sequential<T>;
+export function toBorrow<T extends Obj>(v: T, kind: BorrowKind): Mutable<T> | Sequential<T> {
   /**
    * only call defineProperty if necessary:
    * * 3.5ns to check property
@@ -41,10 +45,11 @@ export const toBorrow = <T extends Obj>(v: T, kind: BorrowKind): Mutable<T> => {
      * use defineProperty to prevent enumeration, rewriting
      * passing statically defined mutableDescriptor to prevent redundant object instantiations, improving performance by ~10ns
      */
-    Object.defineProperty(v, _borrow, mutableDescriptor);
+    Object.defineProperty(v, _borrow, kind === 'm' ? mutableDescriptor : sequentialDescriptor);
   }
-  return v as Mutable<T>;
-};
+  // @ts-expect-error ok
+  return v;
+}
 
 /**
  * Wrap a function argument with Sequential to require callers to wait for the object to become available
@@ -60,16 +65,17 @@ export const borrowSequentially = async <T extends Obj>(v: Sequential<T>) => {
   if (sequentialBorrows.has(v)) {
     const state = sequentialBorrows.get(v)!;
     if (state.locked) {
-      await state.promise;
-      while (state.locked) {
-        await state.promise;
-        /* Waits until this callback is the first in the callback queue for the resolved promise.
+      /* Waits until this callback is the first in the callback queue for the resolved promise.
           We know the first callback in the queue is the only callback that will see state.locked as false, and all callbacks will enqueue themselves on the subsequent promise in the same order. */
-      }
+      do {
+        await state.promise;
+      } while (state.locked);
     }
     // Taking the borrow
     state.locked = true;
-    Object.assign(state, Promise.withResolvers());
+    const { promise, resolve } = Promise.withResolvers<void>();
+    state.promise = promise;
+    state.resolve = resolve;
     return;
   }
   sequentialBorrows.set(v, Object.assign({ locked: true }, Promise.withResolvers<void>()));
@@ -82,5 +88,3 @@ export const returnSequentialBorrow = <T extends Obj>(v: T) => {
     state.resolve();
   }
 };
-
-export const toSequential = <T extends Obj>(v: T): Sequential<T> => Object.assign(v, _seqBrand);
