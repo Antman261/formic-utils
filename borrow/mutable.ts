@@ -1,8 +1,8 @@
-import type { AsyncFunc, Obj } from '../commonTypes/mod.ts';
+import type { AsyncFunc, ObjWide } from '../commonTypes/mod.ts';
 import {
   borrowMutably,
   checkMutablyBorrowed,
-  isMutablyBorrowable,
+  isBorrow,
   type Mutable,
   returnMutableBorrow,
   toBorrow,
@@ -14,7 +14,7 @@ import {
  * Unless the callee is wrapped in `withMutable` or `withStrictMutable`,
  * `takeMutable` only provides compile-time checks with no runtime borrow checking.
  */
-export const takeMutable = <T extends Obj<unknown>>(v: T): Mutable<T> => toBorrow(v, 'm');
+export const takeMutable = <T extends ObjWide<unknown>>(v: T): Mutable<T> => toBorrow(v, 'm');
 
 /**
  * Wrap an asynchronous function that accepts one or more Mutable parameters in `withMutable` to ensure concurrent mutable borrows are correctly tracked by logging a warning if the value is concurrently borrowed more than once before being returned.
@@ -24,7 +24,7 @@ export const takeMutable = <T extends Obj<unknown>>(v: T): Mutable<T> => toBorro
 export const withMutable = <Fn extends AsyncFunc>(fn: Fn): Fn =>
   (async (...args) => {
     for (const arg of args) {
-      if (isMutablyBorrowable(arg)) {
+      if (isBorrow(arg, 'm')) {
         if (checkMutablyBorrowed(arg)) {
           console.warn('Object already mutably borrowed:', arg);
           console.trace(`Object ${Deno.inspect(arg)} already mutably borrowed`);
@@ -45,7 +45,7 @@ export const withMutable = <Fn extends AsyncFunc>(fn: Fn): Fn =>
 export const withStrictMutable = <Fn extends AsyncFunc>(fn: Fn): Fn =>
   (async (...args) => {
     for (const arg of args) {
-      if (isMutablyBorrowable(arg)) {
+      if (isBorrow(arg, 'm')) {
         if (checkMutablyBorrowed(arg)) {
           throw new Error(`Object already mutably borrowed: ${arg}`);
         }

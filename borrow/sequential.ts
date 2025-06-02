@@ -5,7 +5,9 @@ export const takeSequential = <T extends Obj<unknown>>(v: T): Sequential<T> => t
 
 export const withSequential = <Fn extends AsyncFunc>(fn: Fn): Fn =>
   (async (...args) => {
-    for (const arg of args) await borrowSequentially(arg);
+    const borrowPromises: Promise<unknown>[] = [];
+    for (const arg of args) borrowPromises.push(borrowSequentially(arg));
+    await Promise.all(borrowPromises);
     const result = await fn(...args);
     for (const arg of args) returnSequentialBorrow(arg);
     return result;
