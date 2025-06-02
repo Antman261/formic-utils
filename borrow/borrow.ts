@@ -59,47 +59,15 @@ export const checkMutablyBorrowed = <T extends Obj>(v: T): boolean => mutableBor
 export const borrowMutably = <T extends Obj>(v: T) => mutableBorrows.add(v);
 export const returnMutableBorrow = <T extends Obj>(v: T) => mutableBorrows.delete(v);
 
-type SeqBorrowState = {
+export type SeqBorrowState = {
   locked: boolean;
   promise: Promise<void>;
   return(): void;
   borrow(): void;
   resolve(): void;
 };
-const makeSeqBorrowState = (): SeqBorrowState => {
-  const { promise, resolve } = Promise.withResolvers<void>();
-  const state: SeqBorrowState = {
-    locked: true,
-    borrow() {
-      Object.assign(state, Promise.withResolvers<void>(), { locked: true });
-    },
-    return() {
-      state.locked = false;
-      state.resolve();
-    },
-    promise,
-    resolve,
-  };
-  return state;
-};
 
 const sequentialBorrows = new WeakMap<Obj<unknown>, SeqBorrowState>();
-
-export const borrowSequentially = async <T extends Obj>(v: Sequential<T>) => {
-  if (!isBorrow(v, 's')) return;
-  if (!sequentialBorrows.has(v)) return sequentialBorrows.set(v, makeSeqBorrowState());
-  const state = sequentialBorrows.get(v)!;
-  if (state.locked) {
-    /* Waits until this callback is the first in the callback queue for the resolved promise.
-          We know the first callback in the queue is the only callback that will see state.locked as false, and all callbacks will enqueue themselves on the subsequent promise in the same order. */
-    do {
-      await state.promise;
-    } while (state.locked);
-  }
-  state.borrow();
-  return;
-};
-
-export const returnSequentialBorrow = <T extends Obj>(v: T) => {
-  sequentialBorrows.get(v)?.return();
-};
+export const setSeqBorrow = <T extends Obj>(v: T, s: SeqBorrowState) => sequentialBorrows.set(v, s);
+export const getSeqBorrow = <T extends Obj>(v: T): SeqBorrowState | undefined => sequentialBorrows.get(v);
+export const hasSeqBorrow = <T extends Obj>(v: T): boolean => sequentialBorrows.has(v);
