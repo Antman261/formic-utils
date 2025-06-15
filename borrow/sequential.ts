@@ -9,8 +9,18 @@ import {
   toBorrow,
 } from './borrow.ts';
 
+/**
+ * When calling a sequentially mutative function, wrap the mutable parameter(s) in takeSequential to acknowledge that the parameter will be sequentially mutated by the function.
+ *
+ * Unless the callee is wrapped in `withSequential`, `takeSequential` only provides compile-time checks.
+ */
 export const takeSequential = <T extends Obj<unknown>>(v: T): Sequential<T> => toBorrow(v, 's');
 
+/**
+ * Wrap an asynchronous function that accepts one or more Sequentially Mutable parameters in `withSequential` to ensure any concurrent mutable borrows are processed sequentially in the order each function attempted to access the borrowed object.
+ *
+ * This guarantees an object is never mutated concurrently by coordinating mutative access to the object. Read-only access remains unaffected.
+ */
 export const withSequential = <Fn extends AsyncFunc>(fn: Fn): Fn =>
   (async (...args) => {
     const borrowPromises: Promise<unknown>[] = [];

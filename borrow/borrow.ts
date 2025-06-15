@@ -3,26 +3,26 @@ import type { Obj, ObjWide } from '../commonTypes/mod.ts';
 export const _borrow: unique symbol = Symbol('borrow-kind');
 
 type BorrowKind = 'm' | 's'; // mutable | sequential
-export type Borrow<BK extends BorrowKind> = { [_borrow]: BK };
+export type Borrow<T extends Obj, BK extends BorrowKind> = T & { [_borrow]: BK };
 
 /**
  * Wrap a function argument with Mutable to inform callers that the provided value will be mutated.
  */
-export type Mutable<T extends Obj<unknown>> = T & Borrow<'m'>;
+export type Mutable<T extends Obj> = Borrow<T, 'm'>;
 
 /**
  * Wrap a function argument with Sequential to require callers to wait for the object to become available
  */
-export type Sequential<T extends Obj<unknown>> = T & Borrow<'s'>;
+export type Sequential<T extends Obj> = Borrow<T, 's'>;
 
 /**
  * defineProperty is ~40% faster if the object has no prototype, which is what Object.create(null) gives us
  *
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
  */
-export const mutableDescriptor = Object.create(null);
+const mutableDescriptor = Object.create(null);
 mutableDescriptor.value = 'm';
-export const sequentialDescriptor = Object.create(null);
+const sequentialDescriptor = Object.create(null);
 sequentialDescriptor.value = 's';
 
 export function isBorrow<T extends ObjWide>(v: T, kind: 'm'): v is Mutable<T>;
