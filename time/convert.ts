@@ -1,34 +1,31 @@
-type TimeUnit = "ms" | "s" | "mins" | "hrs";
+import { isWeaklyNever } from '../never.ts';
 
-export const time = {
-  convert: (value: number, unit: TimeUnit) => {
-    const valueMs = toMilliseconds(value, unit);
-    return {
-      to(unit: TimeUnit) {
-        return fromMillisecondsTo(valueMs, unit);
-      },
-    };
-  },
+type TimeUnit = 'ms' | 's' | 'mins' | 'hrs';
+
+export const time = (value: number, sourceUnit: TimeUnit) => {
+  const valueMs = toMilliseconds(value, sourceUnit);
+  return {
+    to(targetUnit: TimeUnit) {
+      if (sourceUnit === targetUnit) return value;
+      const result = fromMillisecondsTo(valueMs, targetUnit);
+      console.log({ value, valueMs, result, sourceUnit, targetUnit });
+      return result;
+    },
+  };
 };
 
 function toMilliseconds(value: number, unit: TimeUnit): number {
-  if (unit === "ms") return value;
-  const seconds = value * 1000;
-  if (unit === "s") return seconds;
-  const minutes = seconds * 60;
-  if (unit === "mins") return minutes;
-  const hours = minutes * 60;
-  if (unit === "hrs") return hours;
-  return hours;
+  if (unit === 'ms') return value;
+  if (unit === 's') return Math.ceil(value * 1000);
+  if (unit === 'mins') return Math.ceil(value * 1000 * 60);
+  if (unit === 'hrs') return Math.ceil(value * 1000 * 60 * 60);
+  return isWeaklyNever(unit);
 }
 
 function fromMillisecondsTo(valueMs: number, unit: TimeUnit): number {
-  if (unit === "ms") return valueMs;
-  const seconds = valueMs / 1000;
-  if (unit === "s") return seconds;
-  const minutes = seconds / 60;
-  if (unit === "mins") return minutes;
-  const hours = minutes / 60;
-  if (unit === "hrs") return hours;
-  return hours;
+  if (unit === 'ms') return valueMs;
+  if (unit === 's') return valueMs / 1000;
+  if (unit === 'mins') return valueMs / 1000 / 60;
+  if (unit === 'hrs') return valueMs / 1000 / 60 / 60;
+  return isWeaklyNever(unit);
 }

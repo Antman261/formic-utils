@@ -1,4 +1,4 @@
-import type { Func } from "./Func.ts";
+import type { Func } from "./commonTypes/Func.ts";
 
 /**
  * Generic type for higher order function.
