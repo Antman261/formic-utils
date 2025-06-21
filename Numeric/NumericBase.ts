@@ -33,7 +33,7 @@ export class Numeric<T extends keyof StorageTypes> {
   get buffer(): ArrayBuffer {
     return this._value.buffer;
   }
-  get value() {
+  get value(): number {
     return this._value[0];
   }
   set value(v: number) {
@@ -42,10 +42,10 @@ export class Numeric<T extends keyof StorageTypes> {
   set(v: number) {
     this._value[0] = v;
   }
-  valueOf() {
+  valueOf(): number {
     return this._value[0];
   }
-  [Symbol.toPrimitive](hint: 'string' | 'number' | 'default') {
+  [Symbol.toPrimitive](hint: 'string' | 'number' | 'default'): number {
     if (hint === 'number') {
       return this._value[0];
     }
@@ -54,7 +54,7 @@ export class Numeric<T extends keyof StorageTypes> {
   setViaBinary(buf: Uint8Array): void {
     this._value[0] = new Uint32Array(this.buffer, buf.byteOffset, buf.byteLength / this.size)[0];
   }
-  toBinary() {
+  toBinary(): Uint8Array {
     return new Uint8Array(this._value.buffer, 0, this.size);
   }
 }

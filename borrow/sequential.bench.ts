@@ -22,12 +22,12 @@ const mutateMultipleSequentially = withSequential(mutateMultipleAsync);
 
 const mutateObjectSequentially = withSequential(mutateObjectAsync);
 let obj: TestObj = { value: 'hello!' };
-let obj2: TestObj2 = { v: [] };
-let obj3: TestObj2 = { v: [] };
-let obj4: TestObj2 = { v: [] };
-let obj5: TestObj2 = { v: [] };
-let obj6: TestObj2 = { v: [] };
-let obj7: TestObj2 = { v: [] };
+const obj2: TestObj2 = { v: [] };
+const obj3: TestObj2 = { v: [] };
+const obj4: TestObj2 = { v: [] };
+const obj5: TestObj2 = { v: [] };
+const obj6: TestObj2 = { v: [] };
+const obj7: TestObj2 = { v: [] };
 
 Deno.bench('Using withSequential', async () => {
   mutateObjectSequentially(takeSequential(obj), ' 1st!');

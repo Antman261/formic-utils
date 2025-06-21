@@ -1,8 +1,9 @@
 import { isWeaklyNever } from '../never.ts';
 
 type TimeUnit = 'ms' | 's' | 'mins' | 'hrs';
+type Time = { to(targetUnit: TimeUnit): number };
 
-export const time = (value: number, sourceUnit: TimeUnit) => {
+export const time = (value: number, sourceUnit: TimeUnit): Time => {
   const valueMs = toMilliseconds(value, sourceUnit);
   return {
     to(targetUnit: TimeUnit) {

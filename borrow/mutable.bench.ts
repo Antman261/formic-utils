@@ -7,8 +7,9 @@ const mutateObject = (o: Mutable<TestObj>) => {
   o.value += ' mutated';
 };
 
-const mutateObjectAsynchronously = async (o: Mutable<TestObj>, msg?: string) => {
+const mutateObjectAsynchronously = (o: Mutable<TestObj>, msg?: string) => {
   o.value += msg ?? ' mutated';
+  return Promise.resolve();
 };
 let obj: TestObj = { value: 'hello!' };
 
