@@ -7,4 +7,5 @@ export * from './time/convert.ts';
 // export * from "./memoise.ts";
 export * from './OfUnion.ts';
 export * from './borrow/mod.ts';
+export * from './Numeric/mod.ts';
 // export * from "./withDebugLogging.ts";
