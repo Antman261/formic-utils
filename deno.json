@@ -1,6 +1,6 @@
 {
   "name": "@antman/formic-utils",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "exports": "./mod.ts",
   "tasks": {
     "dev": "deno test --watch"
