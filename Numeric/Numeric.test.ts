@@ -1,5 +1,5 @@
 import { expect } from 'jsr:@std/expect';
-import { UInt } from './Numerics.ts';
+import { SmallFloat, UInt } from './Numerics.ts';
 
 Deno.test('UInt', async ({ step }) => {
   await step('usable with arithmetic', () => {
@@ -28,5 +28,14 @@ Deno.test('UInt', async ({ step }) => {
     expect(dataBuffer.values().toArray()).toEqual([8, 1, 1, 0, 123, 0, 0, 0]);
     b.value = 258000;
     expect(dataBuffer.values().toArray()).toEqual([208, 239, 3, 0, 123, 0, 0, 0]);
+  });
+});
+
+Deno.test('Float', async ({ step }) => {
+  await step('Is usable with arithmetic', () => {
+    const n = new SmallFloat(0.5);
+    expect(+n).toEqual(0.5);
+    expect(+n * 3).toEqual(1.5);
+    expect(+n * +new SmallFloat(3) / +new SmallFloat(5)).toEqual(0.3);
   });
 });
