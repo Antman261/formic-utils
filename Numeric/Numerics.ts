@@ -36,9 +36,34 @@ export class SInt extends Numeric<'SInt'> {
   }
 }
 
-export class SmallFloat extends Numeric<'SmallFloat'> {
+/**
+ * Use Float16 to preallocate memory, either to reduce memory alloc & dealloc, improving performance, or to reduce memory utilization, or both.
+ *
+ * When using multiple Floats, you can allocate memory in a single large buffer and then use Float16 as a view of a single value contained within that buffer by supplying the buffer as the second argument and the values offset within that buffer as the third argument.
+ */
+export class Float16 extends Numeric<'SmallFloat'> {
   constructor(num: number, buffer?: ArrayBuffer, offset: number = 0) {
     super(num, 'SmallFloat', buffer, offset);
+  }
+}
+/**
+ * Use Float32 to preallocate memory, either to reduce memory alloc & dealloc, improving performance, or to reduce memory utilization, or both.
+ *
+ * When using multiple Floats, you can allocate memory in a single large buffer and then use Float32 as a view of a single value contained within that buffer by supplying the buffer as the second argument and the values offset within that buffer as the third argument.
+ */
+export class Float32 extends Numeric<'Float'> {
+  constructor(num: number, buffer?: ArrayBuffer, offset: number = 0) {
+    super(num, 'Float', buffer, offset);
+  }
+}
+/**
+ * Use this wrapper around an element of a Float64Array when you need to store numbers in preallocated memory, such as for performance reasons.
+ *
+ * When using multiple Floats, you can allocate memory in a single large buffer and then use Float64 as a view of a single value contained within that buffer by supplying the buffer as the second argument and the values offset within that buffer as the third argument.
+ */
+export class Float64 extends Numeric<'BigFloat'> {
+  constructor(num: number, buffer?: ArrayBuffer, offset: number = 0) {
+    super(num, 'BigFloat', buffer, offset);
   }
 }
 // export class UBigInt extends Numeric<'UBigInt'> {

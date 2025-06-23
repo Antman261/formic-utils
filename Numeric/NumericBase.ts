@@ -6,6 +6,8 @@ const STORAGE_TYPES = {
   UInt: Uint32Array,
   SInt: Int32Array,
   SmallFloat: Float16Array,
+  Float: Float32Array,
+  BigFloat: Float64Array,
   // todo: bigints better to handle separately
   // UBigInt: BigUint64Array,
   // SBigInt: BigInt64Array,
@@ -18,7 +20,7 @@ export class Numeric<T extends keyof StorageTypes> {
   constructor(num: number, storageType: T, buffer?: ArrayBuffer, offset: number = 0) {
     const storeType = STORAGE_TYPES[storageType];
     buffer
-      // @ts-expect-error Something wrong with deno types here, it thanks Float16Array and Int have incompatible constructors
+      // @ts-expect-error Something wrong with deno types here, it thinks Float16Array and Int have incompatible constructors
       ? this._value = new storeType(buffer, offset, 1) as InstanceType<StorageTypes[T]>
       : this._value = new storeType(1) as InstanceType<StorageTypes[T]>;
     this._value[0] = num;
