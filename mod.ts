@@ -8,4 +8,5 @@ export * from './time/convert.ts';
 export * from './OfUnion.ts';
 export * from './borrow/mod.ts';
 export * from './Numeric/mod.ts';
+export * from './bool/is.ts';
 // export * from "./withDebugLogging.ts";
