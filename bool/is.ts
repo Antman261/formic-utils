@@ -24,10 +24,18 @@ export const isTrue = <T extends unknown>(x: T | undefined): boolean => !!x === 
 export const isFalse = <T extends unknown>(x: T | undefined): boolean => !!x === false;
 
 export const is = <T extends unknown>(x: T) => ({
-  // @ts-expect-error let user misbehave
-  lessThan: <Y extends number | bigint>(y: Y): boolean => x < y,
-  // @ts-expect-error let user misbehave
-  greaterThan: <Y extends number | bigint>(y: Y): boolean => x > y,
+  lessThan: <Y extends number | bigint>(y: Y): boolean => {
+    if (typeof x === 'number' || typeof x !== 'bigint') {
+      throw new TypeError('Cannot less than compare non-numeric type');
+    }
+    return x < y;
+  },
+  greaterThan: <Y extends number | bigint>(y: Y): boolean => {
+    if (typeof x === 'number' || typeof x !== 'bigint') {
+      throw new TypeError('Cannot greater than compare non-numeric type');
+    }
+    return x > y;
+  },
   eq: (y: T): boolean => x === y,
   looseEq: (y: T): boolean => x == y,
 });
