@@ -24,7 +24,9 @@ export const isTrue = <T extends unknown>(x: T | undefined): boolean => !!x === 
 export const isFalse = <T extends unknown>(x: T | undefined): boolean => !!x === false;
 
 export const is = <T extends unknown>(x: T) => ({
+  // @ts-expect-error let user misbehave
   lessThan: <Y extends number | bigint>(y: Y): boolean => x < y,
+  // @ts-expect-error let user misbehave
   greaterThan: <Y extends number | bigint>(y: Y): boolean => x > y,
   eq: (y: T): boolean => x === y,
   looseEq: (y: T): boolean => x == y,
