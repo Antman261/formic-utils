@@ -1,5 +1,5 @@
 import { assert, assertFalse } from '@std/assert';
-import { isDefined, isFalse, isTrue, isUndefined } from './is.ts';
+import { is, isDefined, isFalse, isTrue, isUndefined } from './is.ts';
 
 Deno.test('isDefined ', () => {
   assert(isDefined(0));
@@ -50,4 +50,8 @@ Deno.test('isFalse', () => {
   // @ts-expect-error won't exist on type
   assert(isFalse({}.foo));
   assert(isFalse([].at(4)));
+});
+
+Deno.test('is', () => {
+  assert(is(5).greaterThan(4));
 });
