@@ -21,6 +21,9 @@ Deno.test('isUndefined ', () => {
   // @ts-expect-error won't exist on type
   assert(isUndefined({}.foo));
   assert(isUndefined([].at(4)));
+  const x: number | undefined = 1;
+  if (isUndefined(x)) return;
+  assert(x);
 });
 
 Deno.test('isTrue', () => {
