@@ -38,4 +38,20 @@ export const is = <T extends unknown>(x: T) => ({
   },
   eq: (y: T): boolean => x === y,
   looseEq: (y: T): boolean => x == y,
+  not: {
+    lessThan: <Y extends number | bigint>(y: Y): boolean => {
+      if (typeof x !== 'number' && typeof x !== 'bigint') {
+        throw new TypeError('Cannot less than compare non-numeric type');
+      }
+      return (x < y) === false;
+    },
+    greaterThan: <Y extends number | bigint>(y: Y): boolean => {
+      if (typeof x !== 'number' && typeof x !== 'bigint') {
+        throw new TypeError('Cannot greater than compare non-numeric type');
+      }
+      return (x > y) === false;
+    },
+    eq: (y: T): boolean => x !== y,
+    looseEq: (y: T): boolean => x != y,
+  },
 });

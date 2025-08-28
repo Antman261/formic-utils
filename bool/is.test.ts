@@ -54,4 +54,5 @@ Deno.test('isFalse', () => {
 
 Deno.test('is', () => {
   assert(is(5).greaterThan(4));
+  assertFalse(is(5).not.greaterThan(4));
 });
